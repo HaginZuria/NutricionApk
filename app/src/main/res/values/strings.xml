@@ -10,4 +10,8 @@
     <string name="password">Contraseña</string>
     <string name="telefono">Telefono</string>
     <string name="login">Iniciar sesión</string>
+
+    //Menu
+    <string name="registro">Registrar calorías</string>
+    <string name="logout">Cerrar sesión</string>
 </resources>
