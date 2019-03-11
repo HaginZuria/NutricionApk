@@ -26,6 +26,8 @@ import android.content.Context;
 import org.json.JSONObject;
 
 public class LoginActivity extends Activity {
+    //private String ip = "10.111.7.131:567";
+    private String ip= "192.168.1.34:567";
 
     private Button btnLogin;
     //private Button btnActualizar;
@@ -37,6 +39,7 @@ public class LoginActivity extends Activity {
 
     private EditText txtUsuario;
     private String email;
+    private String foto;
     private EditText txtPassword;
     //private EditText txtTelefono;
 
@@ -59,7 +62,7 @@ public class LoginActivity extends Activity {
         txtPassword = (EditText)findViewById(R.id.txtPassword);
         //txtTelefono = (EditText)findViewById(R.id.txtTelefono);
 
-        lblResultado = (TextView)findViewById(R.id.lblResultado);
+        //lblResultado = (TextView)findViewById(R.id.lblResultado);
         //lstClientes = (ListView)findViewById(R.id.lstClientes);
 
 
@@ -82,6 +85,7 @@ public class LoginActivity extends Activity {
         sharedpreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("email", email);
+        editor.putString("foto", foto);
         editor.commit();
         Log.d("EMAIL: ",email);
         Intent intent = new Intent(this, MainActivity.class);
@@ -103,7 +107,6 @@ public class LoginActivity extends Activity {
     //Tarea As�ncrona para llamar al WS de consulta en segundo plano
     private class TareaWSLogin extends AsyncTask<String,Integer,Boolean> {
         private String password;
-        private String foto;
         String id, id2;
 
 
@@ -117,7 +120,7 @@ public class LoginActivity extends Activity {
             id2 = params[1];
 
             HttpGet del =
-                    new HttpGet("http://10.111.7.131:567/WebServiceRest/Api/Usuarios/Usuario/" + id + "/" + id2);
+                    new HttpGet("http://"+ip+"/WebServiceRest/Api/Usuarios/Usuario/" + id + "/" + id2);
 
             del.setHeader("content-type", "application/json");
 
@@ -145,11 +148,11 @@ public class LoginActivity extends Activity {
 
             if (result)
             {
-                lblResultado.setText("" + email + "-" + password + "-" + foto);
+                //lblResultado.setText("" + email + "-" + password + "-" + foto);
                 launchSecondActivity();
             }
             else{
-                lblResultado.setText("Inicio de sesión fallido " + id + " " + id2);
+                //lblResultado.setText("Inicio de sesión fallido " + id + " " + id2);
 
             }
         }

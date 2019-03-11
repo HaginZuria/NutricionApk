@@ -14,4 +14,11 @@
     //Menu
     <string name="registro">Registrar calorías</string>
     <string name="logout">Cerrar sesión</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="escogerAlimento">Elige un alimento</string>
+    <string name="bienvenida">Bienvenido a la aplicación de Nutrición</string>
+    <string name="autores">Una apliación de L. Unai Fariñas y J. Aarón Morán \n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t UPV/EHU 2019</string>
+    <string name="EHU">UPV/EHU 2019</string>
 </resources>

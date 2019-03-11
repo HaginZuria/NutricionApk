@@ -1,10 +1,16 @@
 package com.example.hagin.nutricion;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,10 +22,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, RegistrarCaloriasFragment.OnFragmentInteractionListener, MainFragment.OnFragmentInteractionListener {
 
 
 
@@ -46,6 +56,20 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Hacemos que sea el fragment inicial
+        Fragment fragment = null;
+        Class fragmentClass = null;
+        fragmentClass = MainFragment.class;
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.f1Content, fragment).commit();
+        //FIN Fragments
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +108,16 @@ public class MainActivity extends AppCompatActivity
 
         SharedPreferences sharedpreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         TextView textEmail = (TextView)findViewById(R.id.textCorreo);
+
+        final String foto = sharedpreferences.getString("foto", "");
+        findViewById(R.id.imageView).post(new Runnable() {
+            @Override
+            public void run() {
+                Uri selectedImageUri = Uri.parse(foto);
+                ((ImageView) findViewById(R.id.imageView)).setImageURI(selectedImageUri);
+                ((ImageView) findViewById(R.id.imageView)).setLayoutParams(new LinearLayout.LayoutParams(600, 120, 20));
+            }
+        });
         String nuevoEmail = sharedpreferences.getString("email","");
         textEmail.setText(nuevoEmail);
 
@@ -110,11 +144,15 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Fragment fragment = null;
+        Class fragmentClass = null;
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_calorias) {
+            // Handle the registrar calorias action
+            fragmentClass = RegistrarCaloriasFragment.class;
 
+        } else if (id == R.id.nav_logout) {
+            logout();
         } /*else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -125,16 +163,46 @@ public class MainActivity extends AppCompatActivity
 
         }
 
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(fragment != null) {
+            // Insert the fragment by replacing any existing fragment
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.f1Content, fragment).commit();
+        }
+        /*FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_frame, fragment);
+        ft.commit();*/
+
+        // Highlight the selected item has been done by NavigationView
+        item.setChecked(true);
+        // Set action bar title
+        setTitle(item.getTitle());
+        // Close the navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        drawer.closeDrawers();
+
+
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    public  void logout(View view){
+    public  void logout(){
         SharedPreferences sharedpreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.clear();
         editor.commit();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }
