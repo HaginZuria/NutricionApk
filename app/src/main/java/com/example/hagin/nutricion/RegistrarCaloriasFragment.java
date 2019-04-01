@@ -164,7 +164,7 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
             HttpClient httpClient = new DefaultHttpClient();
 
             HttpGet del =
-                    new HttpGet("http://"+ip+"/WebServiceRest/Api/Alimentos/");
+                    new HttpGet("http://"+ip+"/WebServiceRest/Api/Alimento/");
 
             del.setHeader("content-type", "application/json");
 

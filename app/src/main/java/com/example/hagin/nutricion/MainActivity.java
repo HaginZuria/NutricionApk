@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -27,11 +28,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, RegistrarCaloriasFragment.OnFragmentInteractionListener, MainFragment.OnFragmentInteractionListener {
 
-
+    private final String baseUrl = "http://10.111.201.14:88/";
+    List<Usuario> listaUsuarios = new ArrayList<>();
+    RecyclerView rvUsuarios;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +65,28 @@ public class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        UsuarioService usuarioService = retrofit.create(UsuarioService.class);
+
+        Call<List<Usuario>> lista = usuarioService.getUsuarios();
+        lista.enqueue(new Callback<List<Usuario>>() {
+            @Override
+            public void onResponse(Call<List<Usuario>> call, Response<List<Usuario>> response) {
+                if(response.isSuccessful()){
+                    listaUsuarios = response.body();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Usuario>> call, Throwable t) {
+
+            }
+        });
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

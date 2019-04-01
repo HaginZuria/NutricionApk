@@ -22,12 +22,23 @@ import com.example.hagin.nutricion.MainActivity;
 import com.example.hagin.nutricion.R;
 import android.content.SharedPreferences;
 import android.content.Context;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class LoginActivity extends Activity {
     //private String ip = "10.111.7.131:567";
-    private String ip= "192.168.1.34:567";
+    private final String baseUrl = "http://10.111.201.14:88/";
+
 
     private Button btnLogin;
     //private Button btnActualizar;
@@ -46,11 +57,18 @@ public class LoginActivity extends Activity {
     private TextView lblResultado;
     private ListView lstClientes;
     SharedPreferences sharedpreferences;
+    private UsuarioService usuarioService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        usuarioService = retrofit.create(UsuarioService.class);
 
         btnLogin = (Button)findViewById(R.id.btnLogin);
         //btnActualizar = (Button)findViewById(R.id.btnActualizar);
@@ -62,7 +80,7 @@ public class LoginActivity extends Activity {
         txtPassword = (EditText)findViewById(R.id.txtPassword);
         //txtTelefono = (EditText)findViewById(R.id.txtTelefono);
 
-        //lblResultado = (TextView)findViewById(R.id.lblResultado);
+        lblResultado = (TextView)findViewById(R.id.lblResultado2);
         //lstClientes = (ListView)findViewById(R.id.lstClientes);
 
 
@@ -70,10 +88,33 @@ public class LoginActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                TareaWSLogin tarea = new TareaWSLogin();
-                tarea.execute(
-                        txtUsuario.getText().toString(),
-                        txtPassword.getText().toString());
+                final String usuario =txtUsuario.getText().toString();
+                final String contrasena =txtPassword.getText().toString();
+                final Call<Usuario> login = usuarioService.GetobtenerUsuario(usuario, contrasena);
+                login.enqueue(new Callback<Usuario>(){
+                    @Override
+                    public void onResponse(Call<Usuario> call, Response<Usuario> response) {
+                        System.err.println("entra onresponse");
+
+                        if(response.isSuccessful()){
+                           launchSecondActivity();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Usuario> call, Throwable t  ) {
+                        if(t instanceof IOException){
+                            lblResultado.setText("Inicio de sesión fallido " + usuario + " " + contrasena + " " + t.getMessage());
+                        }
+                        else {
+                            lblResultado.setText("Inicio de sesión fallido " + usuario + " " + contrasena );
+                        }
+                    }
+                });
+                //TareaWSLogin tarea = new TareaWSLogin();
+                //tarea.execute(
+                  //      txtUsuario.getText().toString(),
+                    //    txtPassword.getText().toString());
             }
         });
 
@@ -87,7 +128,7 @@ public class LoginActivity extends Activity {
         editor.putString("email", email);
         editor.putString("foto", foto);
         editor.commit();
-        Log.d("EMAIL: ",email);
+        //Log.d("EMAIL: ",email);
         Intent intent = new Intent(this, MainActivity.class);
         //String message = mMessageEditText.getText().toString();
 
@@ -120,8 +161,8 @@ public class LoginActivity extends Activity {
             id2 = params[1];
 
             HttpGet del =
-                    new HttpGet("http://"+ip+"/WebServiceRest/Api/Usuarios/Usuario/" + id + "/" + id2);
-
+                   // new HttpGet("http://"+ip+"/WebServiceRest/Api/Usuarios/Usuario/" + id + "/" + id2);
+                    new HttpGet("http://"+"ip"+"/WebApplicationApi/api/Usuarios/obtenerUsuario/" + id + "/" + id2);
             del.setHeader("content-type", "application/json");
 
             try
