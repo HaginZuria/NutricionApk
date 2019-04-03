@@ -1,5 +1,6 @@
 package com.example.hagin.nutricion;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -13,18 +14,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.hagin.nutricion.Models.Alimento;
+import com.example.hagin.nutricion.Models.Caloria;
 import com.example.hagin.nutricion.Models.Usuario;
 import com.example.hagin.nutricion.Services.AlimentoService;
+import com.example.hagin.nutricion.Services.CaloriaService;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -37,6 +44,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -52,7 +61,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RegistrarCaloriasFragment extends Fragment implements AdapterView.OnItemClickListener {
     //private String ip = "10.111.7.131:567";
     private String baseUrl= "http://10.111.201.14:88/";
-    List<Usuario> listaAlimentos = new ArrayList<>();
+    List<Alimento> listaAlimentos = new ArrayList<>();
     private Spinner spinner, spinnerTipoComida;
     private Integer codigo;
 
@@ -63,7 +72,10 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
     private TextView lblResultado;
     //txtCantidad.getText().toString(),
     private AlimentoService alimentoService;
-
+    private CaloriaService caloriaService;
+    private String fecha;
+    private Calendar myCalendar = Calendar.getInstance();
+    private EditText edittext;
 
     public RegistrarCaloriasFragment() {
         // Required empty public constructor
@@ -101,37 +113,140 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
                 .build();
 
         alimentoService = retrofit.create(AlimentoService.class);
+        caloriaService = retrofit.create(CaloriaService.class);
 
         spinner = view.findViewById(R.id.spinner);
         spinnerTipoComida = view.findViewById(R.id.spinnerTipoComida);
         lblResultado = (TextView) view.findViewById(R.id.labelResultado);
         txtCantidad = (EditText) view.findViewById(R.id.cantidad);
         btnInsertar = (Button)view.findViewById(R.id.registrarCal);
+        edittext= (EditText) view.findViewById(R.id.date);
         //final Date todayDate = Calendar.getInstance().getTime();
         final String todayDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         SharedPreferences sharedpreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         final String email = sharedpreferences.getString("email","");
+
         btnInsertar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TareaWSInsertar tarea = new TareaWSInsertar();
-                tarea.execute(
-                        email, todayDate.toString(),tipoComida.toString(),codigo.toString());
+                Caloria caloria = new Caloria();
+                caloria.setEmail(email);
+                caloria.setCodigoAlimento(codigo);
+                caloria.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
+                caloria.setFecha(fecha);
+                caloria.setTipoComida(tipoComida.toString());
+                System.out.println("antes de la cola, "+fecha);
+
+                final Call<Caloria> insertarCaloria = caloriaService.setCalorias(caloria);
+                        //(email, todayDate.toString(), tipoComida.toString(), codigo, Integer.parseInt(txtCantidad.getText().toString()));
+
+                insertarCaloria.enqueue(new Callback<Caloria>(){
+                    @Override
+                    public void onResponse(Call<Caloria> call, Response<Caloria> response) {
+                        System.err.println("entra onresponse");
+                        if(response.isSuccessful()){
+                            lblResultado.setText("Insertado OK.");
+                            System.out.println("sakcesful");
+                        }else{
+                            System.out.println("elsa: "+response.message());
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Caloria> call, Throwable t  ) {
+                        lblResultado.setText("No se ha podido insertar.");
+                        System.out.println("feiyur");
+                    }
+                });
             }
         });
-
-        //new TareaWSGetAlimentos().execute();
         Call<List<Alimento>> lista = alimentoService.getAlimentos();
-        /*lista.enqueue(new Callback<List<Alimento>>(){
+        lista.enqueue(new Callback<List<Alimento>>(){
             @Override
-            public void onResponse(Call<<List<Alimento>> call, Response<<List<Alimento>> response) {
+            public void onResponse(Call<List<Alimento>> call, Response<List<Alimento>> response) {
                 if(response.isSuccessful()){
                     listaAlimentos = response.body();
+                    String[] alimentos = new String[listaAlimentos.size()];
+                    for(int i=0; i<listaAlimentos.size(); i++)
+                    {
+                        Alimento obj = listaAlimentos.get(i);
+
+                        int codigo = obj.getCodigo();
+                        String descripcion = obj.getDescripcion();
+                        int calorias = obj.getCalorias();
+
+                        alimentos[i] = "" + codigo + "-" + descripcion + "-" + calorias;
+                    }
+                    //System.out.println(alimentos);
+
+                    final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
+                            // TODO Auto-generated method stub
+                            myCalendar.set(Calendar.YEAR, year);
+                            myCalendar.set(Calendar.MONTH, monthOfYear);
+                            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            updateLabel();
+                        }
+                    };
+                    edittext.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // TODO Auto-generated method stub
+                            new DatePickerDialog(RegistrarCaloriasFragment.this.getContext(), date, myCalendar
+                                    .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                                    myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                        }
+                    });
+
+                    spinner.setAdapter(new ArrayAdapter<String>(RegistrarCaloriasFragment.this.getContext(), android.R.layout.simple_list_item_1, alimentos));
+                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            String selected = parent.getItemAtPosition(position).toString();
+                            Context context = parent.getContext();
+                            CharSequence text = selected;
+                            codigo = position+1;
+                            // int duration = Toast.LENGTH_SHORT;
+
+                            //Toast toast = Toast.makeText(context, "Meow"+codigo, duration);
+                            //toast.show();
+                        }
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                        }
+                    });
+
+                    String[] listaTipo ={"Desayuno","Almuerzo","Cena"};
+                    spinnerTipoComida.setAdapter(new ArrayAdapter<String>(RegistrarCaloriasFragment.this.getContext(), android.R.layout.simple_list_item_1, listaTipo));
+                    spinnerTipoComida.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            String selected = parent.getItemAtPosition(position).toString();
+                            Context context = parent.getContext();
+                            CharSequence text = selected;
+                            switch (position){
+                                case 1://Almuerzo
+                                    tipoComida = 'A';
+                                    break;
+                                case 2://Cena
+                                    tipoComida = 'C';
+                                    break;
+                                default://Desayuno
+                                    tipoComida = 'D';
+                                    break;
+                            }
+                            //Toast.makeText(context, "Char: "+tipoComida, Toast.LENGTH_SHORT).show();
+                        }
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                        }
+                    });
                 }
             }
 
             @Override
-            public void onFailure(Call<<List<Alimento>> call, Throwable t  ) {
+            public void onFailure(Call<List<Alimento>> call, Throwable t  ) {
                 if(t instanceof IOException){
                     //lblResultado.setText("Inicio de sesión fallido " + usuario + " " + contrasena + " " + t.getMessage());
                 }
@@ -139,8 +254,33 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
                     //lblResultado.setText("Inicio de sesión fallido " + usuario + " " + contrasena );
                 }
             }
-        });*/
+        });
         return view;
+    }
+
+    private void updateLabel(){
+        String myFormat = "dd-MM-yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        int day = myCalendar.get(Calendar.DAY_OF_MONTH); // get the selected day of the month
+        String dayString;
+        if(day<10){
+            dayString = "0"+String.valueOf(day);
+        }else{
+            dayString = String.valueOf(day);
+        }
+        int month = myCalendar.get(Calendar.MONTH)+1; // get the selected month
+        String monthString;
+        if(month<10){
+            monthString = "0"+String.valueOf(month);
+        }else{
+            monthString = String.valueOf(month);
+        }
+        int year = myCalendar.get(Calendar.YEAR);; // get the selected year
+        fecha = dayString +"-"+ monthString +"-"+ year;
+        System.out.println("cgvh, "+fecha);
+
+        edittext.setText(sdf.format(myCalendar.getTime()));
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -185,151 +325,5 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    //Tarea As�ncrona para llamar al WS de consulta en segundo plano
-    private class TareaWSGetAlimentos extends AsyncTask<String,Integer,Boolean> {
-
-        private String[] alimentos;
-
-        protected Boolean doInBackground(String... params) {
-
-            boolean resul = true;
-
-            HttpClient httpClient = new DefaultHttpClient();
-
-            HttpGet del =
-                    new HttpGet("http://"+"ip"+"/WebServiceRest/Api/Alimento/");
-
-            del.setHeader("content-type", "application/json");
-
-            try
-            {
-                HttpResponse resp = httpClient.execute(del);
-                String respStr = EntityUtils.toString(resp.getEntity());
-
-                JSONArray respJSON = new JSONArray(respStr);
-
-                alimentos = new String[respJSON.length()];
-
-                for(int i=0; i<respJSON.length(); i++)
-                {
-                    JSONObject obj = respJSON.getJSONObject(i);
-
-                    int codigo = obj.getInt("codigo");
-                    String descripcion = obj.getString("descripcion");
-                    int calorias = obj.getInt("calorias");
-
-                    alimentos[i] = "" + codigo + "-" + descripcion + "-" + calorias;
-                }
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
-                resul = false;
-            }
-
-            return resul;
-        }
-
-        protected void onPostExecute(Boolean result) {
-
-            if (result)
-            {
-                //Rellenamos la lista con los nombres de los clientes
-                //Rellenamos la lista con los resultados
-                spinner.setAdapter(new ArrayAdapter<String>(RegistrarCaloriasFragment.this.getContext(), android.R.layout.simple_list_item_1, alimentos));
-                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        String selected = parent.getItemAtPosition(position).toString();
-                        Context context = parent.getContext();
-                        CharSequence text = selected;
-                        codigo = position+1;
-                       // int duration = Toast.LENGTH_SHORT;
-
-                        //Toast toast = Toast.makeText(context, "Meow"+codigo, duration);
-                        //toast.show();
-                    }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
-
-                String[] listaTipo ={"Desayuno","Almuerzo","Cena"};
-                spinnerTipoComida.setAdapter(new ArrayAdapter<String>(RegistrarCaloriasFragment.this.getContext(), android.R.layout.simple_list_item_1, listaTipo));
-                spinnerTipoComida.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        String selected = parent.getItemAtPosition(position).toString();
-                        Context context = parent.getContext();
-                        CharSequence text = selected;
-                        switch (position){
-                            case 1://Almuerzo
-                                tipoComida = 'A';
-                                break;
-                            case 2://Cena
-                                tipoComida = 'C';
-                                break;
-                            default://Desayuno
-                                tipoComida = 'D';
-                                break;
-                        }
-                        //Toast.makeText(context, "Char: "+tipoComida, Toast.LENGTH_SHORT).show();
-                    }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-                    }
-                });
-
-            }
-        }
-    }
-
-
-    //Tarea As�ncrona para llamar al WS de inserci�n en segundo plano
-    private class TareaWSInsertar extends AsyncTask<String,Integer,Boolean> {
-
-        protected Boolean doInBackground(String... params) {
-
-            boolean resul = true;
-            HttpClient httpClient = new DefaultHttpClient();
-
-            HttpPost post = new HttpPost("http://"+"ip"+"/WebServiceRest/Api/Calorias/Caloria");
-            post.setHeader("content-type", "application/json");
-            try
-            {
-                //Construimos el objeto cliente en formato JSON
-                JSONObject dato = new JSONObject();
-
-                dato.put("email", params[0]);
-                dato.put("fecha", params[1]);
-                dato.put("tipoComida", params[2]);
-                dato.put("codigoAlimento", Integer.parseInt(params[3]));
-                dato.put("cantidad", txtCantidad.getText().toString());
-                StringEntity entity = new StringEntity(dato.toString());
-                post.setEntity(entity);
-
-                HttpResponse resp = httpClient.execute(post);
-                String respStr = EntityUtils.toString(resp.getEntity());
-                if(!respStr.equals("true"))
-                    resul = false;
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
-                resul = false;
-            }
-            return resul;
-        }
-
-        protected void onPostExecute(Boolean result) {
-            if (result)
-            {
-                lblResultado.setText("Insertado OK.");
-            }else{
-                lblResultado.setText("No se ha podido insertar.");
-            }
-        }
     }
 }

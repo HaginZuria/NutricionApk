@@ -97,6 +97,9 @@ public class LoginActivity extends Activity {
                         System.err.println("entra onresponse");
 
                         if(response.isSuccessful()){
+                            email=response.body().getEmail();
+                            foto=response.body().getFoto();
+
                            launchSecondActivity();
                         }
                     }

@@ -49,18 +49,33 @@
         android:inputType="number"
         android:text="0" />
 
+    <TextView
+        android:id="@+id/textDate"
+        android:layout_marginTop="175dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seleccione la fecha de la comida" />
+
+    <EditText
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:clickable="true"
+        android:hint="Fecha"/>
+
     <Button
         android:id="@+id/registrarCal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="170dp"
+        android:layout_marginTop="250dp"
         android:text="Registrar" />
 
     <TextView
         android:id="@+id/labelResultado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="300dp"
         android:text="" />
 
 
