@@ -16,11 +16,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.hagin.nutricion.Models.Alimento;
+import com.example.hagin.nutricion.Models.Usuario;
+import com.example.hagin.nutricion.Services.AlimentoService;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -31,6 +35,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -43,7 +51,8 @@ import org.json.JSONObject;
  */
 public class RegistrarCaloriasFragment extends Fragment implements AdapterView.OnItemClickListener {
     //private String ip = "10.111.7.131:567";
-    private String ip= "192.168.1.34:567";
+    private String baseUrl= "http://10.111.201.14:88/";
+    List<Usuario> listaAlimentos = new ArrayList<>();
     private Spinner spinner, spinnerTipoComida;
     private Integer codigo;
 
@@ -53,6 +62,8 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
     private Button btnInsertar;
     private TextView lblResultado;
     //txtCantidad.getText().toString(),
+    private AlimentoService alimentoService;
+
 
     public RegistrarCaloriasFragment() {
         // Required empty public constructor
@@ -85,6 +96,12 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_registrar_calorias, container, false);
 
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        alimentoService = retrofit.create(AlimentoService.class);
+
         spinner = view.findViewById(R.id.spinner);
         spinnerTipoComida = view.findViewById(R.id.spinnerTipoComida);
         lblResultado = (TextView) view.findViewById(R.id.labelResultado);
@@ -103,8 +120,26 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
             }
         });
 
-        new TareaWSGetAlimentos().execute();
+        //new TareaWSGetAlimentos().execute();
+        Call<List<Alimento>> lista = alimentoService.getAlimentos();
+        /*lista.enqueue(new Callback<List<Alimento>>(){
+            @Override
+            public void onResponse(Call<<List<Alimento>> call, Response<<List<Alimento>> response) {
+                if(response.isSuccessful()){
+                    listaAlimentos = response.body();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<<List<Alimento>> call, Throwable t  ) {
+                if(t instanceof IOException){
+                    //lblResultado.setText("Inicio de sesión fallido " + usuario + " " + contrasena + " " + t.getMessage());
+                }
+                else {
+                    //lblResultado.setText("Inicio de sesión fallido " + usuario + " " + contrasena );
+                }
+            }
+        });*/
         return view;
     }
 
@@ -164,7 +199,7 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
             HttpClient httpClient = new DefaultHttpClient();
 
             HttpGet del =
-                    new HttpGet("http://"+ip+"/WebServiceRest/Api/Alimento/");
+                    new HttpGet("http://"+"ip"+"/WebServiceRest/Api/Alimento/");
 
             del.setHeader("content-type", "application/json");
 
@@ -260,7 +295,7 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
             boolean resul = true;
             HttpClient httpClient = new DefaultHttpClient();
 
-            HttpPost post = new HttpPost("http://"+ip+"/WebServiceRest/Api/Calorias/Caloria");
+            HttpPost post = new HttpPost("http://"+"ip"+"/WebServiceRest/Api/Calorias/Caloria");
             post.setHeader("content-type", "application/json");
             try
             {

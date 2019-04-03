@@ -18,16 +18,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import com.example.hagin.nutricion.MainActivity;
-import com.example.hagin.nutricion.R;
+
+import com.example.hagin.nutricion.Models.Usuario;
+import com.example.hagin.nutricion.Services.UsuarioService;
+
 import android.content.SharedPreferences;
 import android.content.Context;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;

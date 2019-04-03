@@ -1,4 +1,4 @@
-package com.example.hagin.nutricion;
+package com.example.hagin.nutricion.Models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
