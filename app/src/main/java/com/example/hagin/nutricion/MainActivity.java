@@ -140,15 +140,15 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences sharedpreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         TextView textEmail = (TextView)findViewById(R.id.textCorreo);
 
-        /*final String foto = sharedpreferences.getString("foto", "");
+        final String foto = sharedpreferences.getString("foto", "");
         findViewById(R.id.imageView).post(new Runnable() {
             @Override
             public void run() {
-                Uri selectedImageUri = Uri.parse(foto);
+                Uri selectedImageUri = Uri.parse("R.mipmap.img1");
                 ((ImageView) findViewById(R.id.imageView)).setImageURI(selectedImageUri);
                 ((ImageView) findViewById(R.id.imageView)).setLayoutParams(new LinearLayout.LayoutParams(600, 120, 20));
             }
-        });*/
+        });
         String nuevoEmail = sharedpreferences.getString("email","");
         textEmail.setText(nuevoEmail);
 
