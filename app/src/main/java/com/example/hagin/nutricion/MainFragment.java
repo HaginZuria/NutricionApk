@@ -30,8 +30,8 @@ import org.json.JSONObject;
  * create an instance of this fragment.
  */
 public class MainFragment extends Fragment {
-    //private String ip = "10.111.7.131:567";
-    private String ip= "192.168.1.34:567";
+    private String ip = "http://25.46.129.167:3306/";
+    //private String ip= "http://10.111.7.131:3306/";
 
     private ListView lstCalorias;
 

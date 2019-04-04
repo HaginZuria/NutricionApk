@@ -36,8 +36,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends Activity {
-    //private String ip = "10.111.7.131:567";
-    private final String baseUrl = "http://10.111.201.14:88/";
+    private String baseUrl = "http://192.168.1.37:3306/";
+    //private final String baseUrl = "http://10.111.7.131:3306/";
 
 
     private Button btnLogin;

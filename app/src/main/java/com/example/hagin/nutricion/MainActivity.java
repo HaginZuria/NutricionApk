@@ -38,33 +38,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, RegistrarCaloriasFragment.OnFragmentInteractionListener, MainFragment.OnFragmentInteractionListener {
 
-    private final String baseUrl = "http://10.111.201.14:88/";
-    List<Usuario> listaUsuarios = new ArrayList<>();
+    private String baseUrl = "http://192.168.1.37:3306/";
+    //List<Usuario> listaUsuarios = new ArrayList<>();
     RecyclerView rvUsuarios;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        /*Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
-                .getBoolean("isFirstRun", true);
-
-        if(isFirstRun) {
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-            }, 1000);
-
-            getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
-                    .putBoolean("isFirstRun", false).commit();
-        }*/
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
+        /*Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -83,7 +66,7 @@ public class MainActivity extends AppCompatActivity
             public void onFailure(Call<List<Usuario>> call, Throwable t) {
 
             }
-        });
+        });*/
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -144,8 +127,15 @@ public class MainActivity extends AppCompatActivity
         findViewById(R.id.imageView).post(new Runnable() {
             @Override
             public void run() {
-                Uri selectedImageUri = Uri.parse("R.mipmap.img1");
+                System.out.println("Potato, "+foto);
+
+                Uri selectedImageUri = Uri.parse("android.resource:"+foto);
+                //System.out.println(selectedImageUri);
                 ((ImageView) findViewById(R.id.imageView)).setImageURI(selectedImageUri);
+                //int foto2 = getResources().getIdentifier(foto , "drawable", getPackageName());
+                System.out.println(R.mipmap.img1);
+                System.out.println(R.mipmap.img2);
+                //((ImageView) findViewById(R.id.imageView)).setImageResource(foto2);
                 ((ImageView) findViewById(R.id.imageView)).setLayoutParams(new LinearLayout.LayoutParams(600, 120, 20));
             }
         });

@@ -59,8 +59,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * create an instance of this fragment.
  */
 public class RegistrarCaloriasFragment extends Fragment implements AdapterView.OnItemClickListener {
-    //private String ip = "10.111.7.131:567";
-    private String baseUrl= "http://10.111.201.14:88/";
+    private String baseUrl = "http://192.168.1.37:3306/";
+    //private String baseUrl= "http://10.111.7.131:3306/";
     List<Alimento> listaAlimentos = new ArrayList<>();
     private Spinner spinner, spinnerTipoComida;
     private Integer codigo;

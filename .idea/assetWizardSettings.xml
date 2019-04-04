@@ -19,8 +19,11 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
-                                      <entry key="backgroundColor" value="1a22a6" />
-                                      <entry key="foregroundImage" value="C:\Users\Hiccup\Desktop\image2vector.svg" />
+                                      <entry key="backgroundColor" value="ffffff" />
+                                      <entry key="backgroundLayerName" value="ic_launcher_background1" />
+                                      <entry key="foregroundImage" value="C:\Users\Hiccup\Pictures\Capture.PNG" />
+                                      <entry key="foregroundLayerName" value="ic_launcher_foreground1" />
+                                      <entry key="outputName" value="img1" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -47,8 +50,8 @@
                         <option name="values">
                           <map>
                             <entry key="assetSourceType" value="FILE" />
-                            <entry key="outputName" value="lcupvector" />
-                            <entry key="sourceFile" value="C:\Users\Hiccup\Desktop\image2vector.svg" />
+                            <entry key="outputName" value="ic_capture" />
+                            <entry key="sourceFile" value="C:\Users\Hiccup\Desktop\Capture.svg" />
                           </map>
                         </option>
                       </PersistentState>
