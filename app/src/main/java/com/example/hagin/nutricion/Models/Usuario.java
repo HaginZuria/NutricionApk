@@ -40,5 +40,4 @@ public class Usuario {
     public void setFoto(String foto) {
         this.foto = foto;
     }
-
 }

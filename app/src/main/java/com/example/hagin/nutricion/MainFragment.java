@@ -71,8 +71,8 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        TareaWSListar tarea = new TareaWSListar();
-        tarea.execute();
+        //TareaWSListar tarea = new TareaWSListar();
+        //tarea.execute();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        lstCalorias = (ListView)view.findViewById(R.id.lstCalorias);
+        //lstCalorias = (ListView)view.findViewById(R.id.lstCalorias);
         return view;
     }
 
@@ -121,67 +121,5 @@ public class MainFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    //Tarea As�ncrona para llamar al WS de listado en segundo plano
-    private class TareaWSListar extends AsyncTask<String,Integer,Boolean> {
-
-        private String[] clientes;
-
-        protected Boolean doInBackground(String... params) {
-
-            boolean resul = true;
-
-            HttpClient httpClient = new DefaultHttpClient();
-
-            HttpGet del =
-                    new HttpGet("http://"+ip+"/WebServiceRest/Api/Calorias");
-
-            del.setHeader("content-type", "application/json");
-
-            try
-            {
-                HttpResponse resp = httpClient.execute(del);
-                String respStr = EntityUtils.toString(resp.getEntity());
-
-                JSONArray respJSON = new JSONArray(respStr);
-
-                clientes = new String[respJSON.length()];
-
-                for(int i=0; i<respJSON.length(); i++)
-                {
-                    JSONObject obj = respJSON.getJSONObject(i);
-
-                    String email = obj.getString("email");
-                    String fecha = obj.getString("fecha");
-                    String tipoComida = obj.getString("tipoComida");
-                    int codigoAlimento = obj.getInt("codigoAlimento");
-                    int cantidad = obj.getInt("cantidad");
-
-                    clientes[i] = "" + email + "-" + fecha + "-" + tipoComida + "-" + codigoAlimento+ "-" + cantidad;
-                }
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
-                resul = false;
-            }
-
-            return resul;
-        }
-
-        protected void onPostExecute(Boolean result) {
-
-            if (result)
-            {
-                //Rellenamos la lista con los nombres de los clientes
-                //Rellenamos la lista con los resultados
-                ArrayAdapter<String> adaptador =
-                        new ArrayAdapter<String>(getActivity(),
-                                android.R.layout.simple_list_item_1, clientes);
-
-                lstCalorias.setAdapter(adaptador);
-            }
-        }
     }
 }

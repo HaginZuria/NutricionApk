@@ -12,17 +12,9 @@
             android:id="@+id/nav_logout"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/logout" />
-        <!--<item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />-->
     </group>
 
-    <item android:title="Communicate">
+    <!--<item android:title="Communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
@@ -33,6 +25,6 @@
                 android:icon="@drawable/ic_menu_send"
                 android:title="Send" />
         </menu>
-    </item>
+    </item>-->
 
 </menu>

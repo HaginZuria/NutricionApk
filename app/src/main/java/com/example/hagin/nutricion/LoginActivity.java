@@ -41,21 +41,13 @@ public class LoginActivity extends Activity {
 
 
     private Button btnLogin;
-    //private Button btnActualizar;
-    //private Button btnEliminar;
-    //private Button btnObtener;
-    //private Button btnListar;
-
-    //Intent intent = new Intent(this, NavigationDrawerActivity.class);
 
     private EditText txtUsuario;
     private String email;
     private String foto;
     private EditText txtPassword;
-    //private EditText txtTelefono;
 
     private TextView lblResultado;
-    private ListView lstClientes;
     SharedPreferences sharedpreferences;
     private UsuarioService usuarioService;
 
@@ -71,18 +63,10 @@ public class LoginActivity extends Activity {
         usuarioService = retrofit.create(UsuarioService.class);
 
         btnLogin = (Button)findViewById(R.id.btnLogin);
-        //btnActualizar = (Button)findViewById(R.id.btnActualizar);
-        //btnEliminar = (Button)findViewById(R.id.btnEliminar);
-        //btnObtener = (Button)findViewById(R.id.btnObtener);
-        //btnListar = (Button)findViewById(R.id.btnListar);
 
         txtUsuario = (EditText)findViewById(R.id.txtUsuario);
         txtPassword = (EditText)findViewById(R.id.txtPassword);
-        //txtTelefono = (EditText)findViewById(R.id.txtTelefono);
-
         lblResultado = (TextView)findViewById(R.id.lblResultado2);
-        //lstClientes = (ListView)findViewById(R.id.lstClientes);
-
 
         btnLogin.setOnClickListener(new OnClickListener() {
 
@@ -114,10 +98,6 @@ public class LoginActivity extends Activity {
                         }
                     }
                 });
-                //TareaWSLogin tarea = new TareaWSLogin();
-                //tarea.execute(
-                  //      txtUsuario.getText().toString(),
-                    //    txtPassword.getText().toString());
             }
         });
 
@@ -125,81 +105,20 @@ public class LoginActivity extends Activity {
     }
 
     public void launchSecondActivity() {
-        //Log.d(LOG_TAG, "Button clicked!");
         sharedpreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("email", email);
         editor.putString("foto", foto);
         editor.commit();
-        //Log.d("EMAIL: ",email);
         Intent intent = new Intent(this, MainActivity.class);
-        //String message = mMessageEditText.getText().toString();
-
-        //intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
-
-
-    //Tarea As�ncrona para llamar al WS de consulta en segundo plano
-    private class TareaWSLogin extends AsyncTask<String,Integer,Boolean> {
-        private String password;
-        String id, id2;
-
-
-        protected Boolean doInBackground(String... params) {
-
-            boolean resul = true;
-
-            HttpClient httpClient = new DefaultHttpClient();
-
-            id = params[0];
-            id2 = params[1];
-
-            HttpGet del =
-                   // new HttpGet("http://"+ip+"/WebServiceRest/Api/Usuarios/Usuario/" + id + "/" + id2);
-                    new HttpGet("http://"+"ip"+"/WebApplicationApi/api/Usuarios/obtenerUsuario/" + id + "/" + id2);
-            del.setHeader("content-type", "application/json");
-
-            try
-            {
-                HttpResponse resp = httpClient.execute(del);
-                String respStr = EntityUtils.toString(resp.getEntity());
-
-                JSONObject respJSON = new JSONObject(respStr);
-
-                email = respJSON.getString("email");
-                password = respJSON.getString("password");
-                foto = respJSON.getString("foto");
-            }
-            catch(Exception ex)
-            {
-                Log.e("ServicioRest","Error!", ex);
-                resul = false;
-            }
-
-            return resul;
-        }
-
-        protected void onPostExecute(Boolean result) {
-
-            if (result)
-            {
-                //lblResultado.setText("" + email + "-" + password + "-" + foto);
-                launchSecondActivity();
-            }
-            else{
-                //lblResultado.setText("Inicio de sesión fallido " + id + " " + id2);
-
-            }
-        }
     }
 }
 

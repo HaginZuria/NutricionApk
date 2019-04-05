@@ -121,7 +121,7 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
         txtCantidad = (EditText) view.findViewById(R.id.cantidad);
         btnInsertar = (Button)view.findViewById(R.id.registrarCal);
         edittext= (EditText) view.findViewById(R.id.date);
-        //final Date todayDate = Calendar.getInstance().getTime();
+        edittext.setKeyListener(null);
         final String todayDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
         SharedPreferences sharedpreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         final String email = sharedpreferences.getString("email","");
@@ -135,26 +135,26 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
                 caloria.setCantidad(Integer.parseInt(txtCantidad.getText().toString()));
                 caloria.setFecha(fecha);
                 caloria.setTipoComida(tipoComida.toString());
-                System.out.println("antes de la cola, "+fecha);
+               // System.out.println("antes de la cola, "+fecha);
 
                 final Call<Caloria> insertarCaloria = caloriaService.setCalorias(caloria);
-                        //(email, todayDate.toString(), tipoComida.toString(), codigo, Integer.parseInt(txtCantidad.getText().toString()));
 
                 insertarCaloria.enqueue(new Callback<Caloria>(){
                     @Override
                     public void onResponse(Call<Caloria> call, Response<Caloria> response) {
-                        System.err.println("entra onresponse");
+                        //System.err.println("entra onresponse");
                         if(response.isSuccessful()){
                             lblResultado.setText("Insertado OK.");
-                            System.out.println("sakcesful");
+                           // System.out.println("sakcesful");
                         }else{
-                            System.out.println("elsa: "+response.message());
+                           // System.out.println("elsa: "+response.message());
+                            lblResultado.setText("No se ha podido insertar");
                         }
                     }
                     @Override
                     public void onFailure(Call<Caloria> call, Throwable t  ) {
                         lblResultado.setText("No se ha podido insertar.");
-                        System.out.println("feiyur");
+                        //System.out.println("feiyur");
                     }
                 });
             }
@@ -207,10 +207,6 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
                             Context context = parent.getContext();
                             CharSequence text = selected;
                             codigo = position+1;
-                            // int duration = Toast.LENGTH_SHORT;
-
-                            //Toast toast = Toast.makeText(context, "Meow"+codigo, duration);
-                            //toast.show();
                         }
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
@@ -236,7 +232,6 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
                                     tipoComida = 'D';
                                     break;
                             }
-                            //Toast.makeText(context, "Char: "+tipoComida, Toast.LENGTH_SHORT).show();
                         }
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
@@ -244,7 +239,6 @@ public class RegistrarCaloriasFragment extends Fragment implements AdapterView.O
                     });
                 }
             }
-
             @Override
             public void onFailure(Call<List<Alimento>> call, Throwable t  ) {
                 if(t instanceof IOException){
